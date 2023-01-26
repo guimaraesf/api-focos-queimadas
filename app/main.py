@@ -1,8 +1,8 @@
 import os
 import uvicorn
 from typing import List, Optional
-from utils.utils import (get_json_file, get_result_atribute, get_result_municipios,
-                         get_result_estados, get_all_results, get_result_atribute_municipios)
+from utils import (get_json_file, get_result_atribute, get_result_municipios,
+                   get_result_estados, get_all_results, get_result_atribute_municipios)
 from fastapi import (FastAPI, HTTPException, status, Query)
 from fastapi_healthcheck import HealthCheckFactory, healthCheckRoute
 from models import (HealthCheckSchema, PropertiesSchema, MunicipiosSchema,

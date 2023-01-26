@@ -123,6 +123,3 @@ def get_result_estados(file: json, key: str, estado_id: int) -> json:
                 my_list.append(my_dict)
 
     return my_list
-
-
-
