@@ -1,13 +1,12 @@
 import os
 import requests
 
-
 # Inputs- ------------------------------------------------------------------- #
 
 last_hours = '48h'  # 24h ou 48h
 type_file = 'json'  # csv ou json
 region = 'brasil'  # brasil ou ams
-local = os.getenv('LOCAL')
+local = os.getenv('FILES')
 
 # Functions ------------------------------------------------------------------- #
 
@@ -42,10 +41,12 @@ def main(region, last_hours, type_file, path):
 
     if validate_existing_file(save_path, file_name):
         download_url(url_region, save_path)
+        print(f'Successfully saved file')
         is_file_available = True
     else:
         print(f"File {file_name} already exists")
 
+    print('Removing temporary files')
     try:
         for file in os.listdir(local):
             if file.endswith(".zip") or file.endswith(".csv"):

@@ -9,7 +9,7 @@ from models import (HealthCheckSchema, PropertiesSchema, MunicipiosSchema,
                     BiomasSchema, SatelitesSchema, Responses)
 
 
-# inputs ------------------------------------------------------------------- #
+# Inputs ------------------------------------------------------------------- #
 
 local = os.getenv('FILES')
 file_name = 'focos_48h_brasil.json'
