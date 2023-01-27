@@ -18,9 +18,9 @@ path = local + '/' + file_name
 _healthChecks = HealthCheckFactory()
 
 app = FastAPI(
-    title='INPE: Programa Queimadas',
+    title='API - Focos Queimadas',
     version='1.0.0',
-    description='API REST de dados abertos do INPE Programa Queimadas'
+    description='API REST de dados abertos disponibilizados pelo INPE - Programa Queimadas'
 )
 
 # Health Check Endpoint
@@ -32,10 +32,9 @@ app.add_api_route('/api/health',
                   tags=['Health Check'])
 
 @app.get('/focos',
-         description=f'',
          response_model=List[PropertiesSchema],
          status_code=status.HTTP_200_OK,
-         summary='Retorna a lista completa com todos os focos de queimadas',
+         summary=f'Retorna dos dados de focos de calor nas últimas {file_name[6:8]} horas',
          tags=['Focos de Queimadas'],
          responses={
              400: {'model': Responses, 'description': 'Code invalid.'},
@@ -90,44 +89,41 @@ async def get_focos(municipio_id: Optional[int] = Query(default=None), estado_id
 
 
 @app.get('/focos/atributos/municipios',
-         description=f'',
          response_model=List[MunicipiosSchema],
          status_code=status.HTTP_200_OK,
-         summary='Retorna uma lista com observações únicas de todos os municípios.',
+         summary='Retorno dos dados de observações únicas de municípios.',
          tags=['Atributos'])
 async def get_attribute_counties():
-    result = get_json_file(path, 'utf-8', 'features')
-    result = get_result_attribute_counties(result, 'properties')
-
-    return result
+    try:
+        result = get_json_file(path, 'utf-8', 'features')
+        result = get_result_attribute_counties(result, 'properties')
+        return result
+    except:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Not Found')
 
 @app.get('/focos/atributos/estados',
-         description=f'',
          response_model=List[EstadosSchema],
          status_code=status.HTTP_200_OK,
-         summary='Retorna uma lista com observações únicas de todos os municípios.',
+         summary='Retorno dos dados de observações únicas de estados.',
          tags=['Atributos'])
 async def get_attribute_states():
     try:
         result = get_json_file(path, 'utf-8', 'features')
         result = get_result_attribute_states(result, 'properties')
-
         return result
 
     except:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Not Found')
 
 @app.get('/focos/atributos/biomas',
-         description=f'',
          response_model=List[BiomasSchema],
          status_code=status.HTTP_200_OK,
-         summary='Retorna uma lista com observações únicas de todos os biomas.',
+         summary='Retorno dos dados de observações únicas de biomas.',
          tags=['Atributos'])
 async def get_attribute_biomes():
         try:
             result = get_json_file(path, 'utf-8', 'features')
             result = get_result_attributes(result, 'properties', 'bioma')
-
             return result
 
         except:
@@ -135,16 +131,14 @@ async def get_attribute_biomes():
 
 
 @app.get('/focos/atributos/satelites',
-         description=f'',
          response_model=List[SatelitesSchema],
          status_code=status.HTTP_200_OK,
-         summary='Retorna uma lista com observações únicas de todos os satelites.',
+         summary='Retorno dos dados de observações únicas de satélites.',
          tags=['Atributos'])
 async def get_attribute_satellites():
     try:
         result = get_json_file(path, 'utf-8', 'features')
         result = get_result_attributes(result, 'properties', 'satelite')
-
         return result
 
     except:
