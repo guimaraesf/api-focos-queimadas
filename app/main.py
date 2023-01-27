@@ -1,7 +1,7 @@
 import os
 import uvicorn
 from typing import List, Optional
-from utils import (get_json_file, get_result_attributes, get_result_municipios, get_result_estados, get_all_results, get_result_attribute_municipios, get_result_attribute_estados,get_result_estados_municipios)
+from utils import (get_json_file, get_result_attributes, get_result_counties, get_result_states, get_all_results, get_result_attribute_counties, get_result_attribute_states, get_result_states_counties)
 from fastapi import (FastAPI, HTTPException, status, Query)
 from fastapi_healthcheck import HealthCheckFactory, healthCheckRoute
 from models import (HealthCheckSchema, PropertiesSchema, MunicipiosSchema, EstadosSchema, BiomasSchema, SatelitesSchema, Responses)
@@ -9,8 +9,8 @@ from models import (HealthCheckSchema, PropertiesSchema, MunicipiosSchema, Estad
 
 # Inputs ------------------------------------------------------------------- #
 
-local = os.getenv('FILES')
-file_name = 'focos_48h_brasil.json'
+local = os.getenv('FILES')  # Directory where the files will be downloaded.
+file_name = 'focos_48h_brasil.json'  # File name in portal.
 path = local + '/' + file_name
 
 # Configuration API ------------------------------------------------------------------- #
@@ -41,7 +41,7 @@ app.add_api_route('/api/health',
              404: {'model': Responses, 'description': 'Code not found'},
              400: {'model': Responses, 'description': 'Code invalid.'}
          })
-async def get_focos_queimadas(municipio_id: Optional[int] = Query(default=None), estado_id: Optional[int] = Query(default=None)):
+async def get_focos(municipio_id: Optional[int] = Query(default=None), estado_id: Optional[int] = Query(default=None)):
     result = get_json_file(path, 'utf-8', 'features')
 
     if municipio_id is None and estado_id is None:
@@ -52,10 +52,10 @@ async def get_focos_queimadas(municipio_id: Optional[int] = Query(default=None),
         except:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Not Found')
 
-    elif municipio_id is not None and estado_id is None:
+    if municipio_id is not None and estado_id is None:
         try:
             if len(str(municipio_id)) == 7:
-                result = get_result_municipios(result, 'properties', municipio_id)
+                result = get_result_counties(result, 'properties', municipio_id)
                 return result
 
             else:
@@ -64,10 +64,10 @@ async def get_focos_queimadas(municipio_id: Optional[int] = Query(default=None),
         except:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Not Found')
 
-    elif municipio_id is None and estado_id is not None:
+    if municipio_id is None and estado_id is not None:
         try:
             if len(str(estado_id)) == 2:
-                result = get_result_estados(result, 'properties', estado_id)
+                result = get_result_states(result, 'properties', estado_id)
                 return result
             else:
                 raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
@@ -75,16 +75,16 @@ async def get_focos_queimadas(municipio_id: Optional[int] = Query(default=None),
         except:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Not Found')
 
-    elif municipio_id is not None and estado_id is not None:
+    if municipio_id is not None and estado_id is not None:
         if len(str(municipio_id)) == 7 and len(str(estado_id)) == 2:
-            result = get_result_estados_municipios(result, 'properties', estado_id, municipio_id)
+            result = get_result_states_counties(result, 'properties', estado_id, municipio_id)
             return result
         else:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail=f'Code {estado_id} or {municipio_id} invalid.')
     else:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                            detail=f'Code {estado_id} or {municipio_id} invalid.')
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f'Code {estado_id} or {municipio_id} not found.')
 
 @app.get('/focos/atributos/municipios',
          description=f'',
@@ -92,9 +92,9 @@ async def get_focos_queimadas(municipio_id: Optional[int] = Query(default=None),
          status_code=status.HTTP_200_OK,
          summary='Retorna uma lista com observações únicas de todos os municípios.',
          tags=['Atributos'])
-async def get_atributos_municipios():
+async def get_attribute_counties():
     result = get_json_file(path, 'utf-8', 'features')
-    result = get_result_attribute_municipios(result, 'properties')
+    result = get_result_attribute_counties(result, 'properties')
 
     return result
 
@@ -104,9 +104,9 @@ async def get_atributos_municipios():
          status_code=status.HTTP_200_OK,
          summary='Retorna uma lista com observações únicas de todos os municípios.',
          tags=['Atributos'])
-async def get_atributos_municipios():
+async def get_attribute_states():
     result = get_json_file(path, 'utf-8', 'features')
-    result = get_result_attribute_estados(result, 'properties')
+    result = get_result_attribute_states(result, 'properties')
 
     return result
 
@@ -117,7 +117,7 @@ async def get_atributos_municipios():
          status_code=status.HTTP_200_OK,
          summary='Retorna uma lista com observações únicas de todos os biomas.',
          tags=['Atributos'])
-async def get_atributos_biomas():
+async def get_attribute_biomes():
     result = get_json_file(path, 'utf-8', 'features')
     result = get_result_attributes(result, 'properties', 'bioma')
 
@@ -130,7 +130,7 @@ async def get_atributos_biomas():
          status_code=status.HTTP_200_OK,
          summary='Retorna uma lista com observações únicas de todos os satelites.',
          tags=['Atributos'])
-async def get_atributos_satelites():
+async def get_attribute_satellites():
     result = get_json_file(path, 'utf-8', 'features')
     result = get_result_attributes(result, 'properties', 'satelite')
 

@@ -20,7 +20,7 @@ def get_all_results(file: json, key: str) -> json:
     return lista
 
 
-def get_result_attribute_municipios(file: json, key: str) -> json:
+def get_result_attribute_counties(file: json, key: str) -> json:
     """Returns the unique observations of cities"""
     my_list = []
     key_order = ['pais_id', 'pais', 'estado_id', 'estado', 'municipio_id', 'municipio']
@@ -41,7 +41,7 @@ def get_result_attribute_municipios(file: json, key: str) -> json:
     return my_list
 
 
-def get_result_attribute_estados(file: json, key: str) -> json:
+def get_result_attribute_states(file: json, key: str) -> json:
     """Returns the unique observations of cities"""
     my_list = []
     key_order = ['pais_id', 'pais', 'estado_id', 'estado']
@@ -74,7 +74,7 @@ def get_result_attributes(file: json, key: str, attribute: str) -> json:
 
     return my_list
 
-def get_result_municipios(file: json, key: str, municipio_id: int) -> json:
+def get_result_counties(file: json, key: str, municipio_id: int) -> json:
     """Returns the results from the filter by city code"""
     my_list = []
     keys = ['id', 'longitude', 'latitude', 'data_hora_gmt', 'satelite',
@@ -90,7 +90,7 @@ def get_result_municipios(file: json, key: str, municipio_id: int) -> json:
 
     return my_list
 
-def get_result_estados(file: json, key: str, estado_id: int) -> json:
+def get_result_states(file: json, key: str, estado_id: int) -> json:
     """Returns the results from the filter by state code"""
     my_list = []
     keys = ['id', 'longitude', 'latitude', 'data_hora_gmt', 'satelite',
@@ -107,7 +107,7 @@ def get_result_estados(file: json, key: str, estado_id: int) -> json:
     return my_list
 
 
-def get_result_estados_municipios(file: json, key: str, estado_id: int, municipio_id: int) -> json:
+def get_result_states_counties(file: json, key: str, estado_id: int, municipio_id: int) -> json:
     """Returns the results from the filter by state code"""
     my_list = []
     keys = ['id', 'longitude', 'latitude', 'data_hora_gmt', 'satelite',
