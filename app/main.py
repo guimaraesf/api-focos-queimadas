@@ -38,8 +38,9 @@ app.add_api_route('/api/health',
          summary='Retorna a lista completa com todos os focos de queimadas',
          tags=['Focos de Queimadas'],
          responses={
+             400: {'model': Responses, 'description': 'Code invalid.'},
              404: {'model': Responses, 'description': 'Code not found'},
-             400: {'model': Responses, 'description': 'Code invalid.'}
+             422: {'model': Responses, 'description': 'Codes do not match.'}
          })
 async def get_focos(municipio_id: Optional[int] = Query(default=None), estado_id: Optional[int] = Query(default=None)):
     result = get_json_file(path, 'utf-8', 'features')
@@ -107,11 +108,14 @@ async def get_attribute_counties():
          summary='Retorna uma lista com observações únicas de todos os municípios.',
          tags=['Atributos'])
 async def get_attribute_states():
-    result = get_json_file(path, 'utf-8', 'features')
-    result = get_result_attribute_states(result, 'properties')
+    try:
+        result = get_json_file(path, 'utf-8', 'features')
+        result = get_result_attribute_states(result, 'properties')
 
-    return result
+        return result
 
+    except:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Not Found')
 
 @app.get('/focos/atributos/biomas',
          description=f'',
@@ -120,10 +124,14 @@ async def get_attribute_states():
          summary='Retorna uma lista com observações únicas de todos os biomas.',
          tags=['Atributos'])
 async def get_attribute_biomes():
-    result = get_json_file(path, 'utf-8', 'features')
-    result = get_result_attributes(result, 'properties', 'bioma')
+        try:
+            result = get_json_file(path, 'utf-8', 'features')
+            result = get_result_attributes(result, 'properties', 'bioma')
 
-    return result
+            return result
+
+        except:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Not Found')
 
 
 @app.get('/focos/atributos/satelites',
@@ -133,10 +141,14 @@ async def get_attribute_biomes():
          summary='Retorna uma lista com observações únicas de todos os satelites.',
          tags=['Atributos'])
 async def get_attribute_satellites():
-    result = get_json_file(path, 'utf-8', 'features')
-    result = get_result_attributes(result, 'properties', 'satelite')
+    try:
+        result = get_json_file(path, 'utf-8', 'features')
+        result = get_result_attributes(result, 'properties', 'satelite')
 
-    return result
+        return result
+
+    except:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Not Found')
 
 
 if __name__ == '__main__':
