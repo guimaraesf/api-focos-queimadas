@@ -77,14 +77,16 @@ async def get_focos(municipio_id: Optional[int] = Query(default=None), estado_id
 
     if municipio_id is not None and estado_id is not None:
         if len(str(municipio_id)) == 7 and len(str(estado_id)) == 2:
-            result = get_result_states_counties(result, 'properties', estado_id, municipio_id)
-            return result
+            if str(municipio_id)[:2] == str(estado_id):
+                result = get_result_states_counties(result, 'properties', estado_id, municipio_id)
+                return result
+            else:
+                raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                                    detail=f'Codes {estado_id} and {municipio_id} not match. The first 2 digits of the county must match')
         else:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                detail=f'Code {estado_id} or {municipio_id} invalid.')
-    else:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail=f'Code {estado_id} or {municipio_id} not found.')
+                                detail=f'Codes {estado_id} or {municipio_id} invalid.')
+
 
 @app.get('/focos/atributos/municipios',
          description=f'',
