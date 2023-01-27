@@ -4,7 +4,7 @@ from collections import OrderedDict
 # Functions ------------------------------------------------------------------- #
 
 def get_json_file(file, encoding: str, key: str) -> json:
-    """Após ler o arquivo json, o formata para o padrão necessário """
+    """Read json file and select a key"""
     with open(file, encoding=encoding) as data:
         data = json.load(data)
         data = data[key]
@@ -12,37 +12,16 @@ def get_json_file(file, encoding: str, key: str) -> json:
     return data
 
 
-def get_result_municipio(file: json, municipio_id: int, key: str) -> json:
-    lista = []
-    length_id = len(str(municipio_id))
-    if length_id == 7:
-        for i in range(len(file)):
-            values = file[i][key].values()
-            if municipio_id in values:
-                lista.append(file[i][key])
-        return lista
-
-
 def get_all_results(file: json, key: str) -> json:
+    """Returns all available results"""
     lista = []
     for i in range(len(file)):
         lista.append(file[i][key])
     return lista
 
 
-def get_result_estados(file: json, estado_id: int, key: str):
-    _list = []
-    length_id = len(str(estado_id))
-    if length_id == 2:
-        for i in range(len(file)):
-            values = file[i][key].values()
-            print(values)
-            if estado_id in values:
-                _list.append(file[i][key])
-        return _list
-
-
-def get_result_atribute_municipios(file: json, key: str) -> json:
+def get_result_attribute_municipios(file: json, key: str) -> json:
+    """Returns the unique observations of cities"""
     my_list = []
     key_order = ['pais_id', 'pais', 'estado_id', 'estado', 'municipio_id', 'municipio']
     for i in range(len(file)):
@@ -63,7 +42,8 @@ def get_result_atribute_municipios(file: json, key: str) -> json:
 
 
 # Corrigir, pois os estados estão se repetindo.
-def get_result_atribute_estados(file: json, key: str) -> json:
+def get_result_attribute_estados(file: json, key: str) -> json:
+    """Returns the unique observations of cities"""
     my_list = []
     key_order = ['pais_id', 'pais', 'estado_id', 'estado']
     for i in range(len(file)):
@@ -83,11 +63,12 @@ def get_result_atribute_estados(file: json, key: str) -> json:
     return my_list
 
 
-def get_result_atribute(file: json, key: str, atribute: str) -> json:
+def get_result_attributes(file: json, key: str, attribute: str) -> json:
+    """Returns the unique observations of any attribute"""
     my_list = []
     for i in range(len(file)):
         items = file[i][key].items()
-        my_dict = {k: v for k, v in items if k.endswith(atribute)}
+        my_dict = {k: v for k, v in items if k.endswith(attribute)}
         my_list = [my_list[i] for i in range(len(my_list)) if i == my_list.index(my_list[i])]
         my_list.append(my_dict)
     del my_list[-1]
@@ -95,6 +76,7 @@ def get_result_atribute(file: json, key: str, atribute: str) -> json:
     return my_list
 
 def get_result_municipios(file: json, key: str, municipio_id: int) -> json:
+    """Returns the results from the filter by city code"""
     my_list = []
     keys = ['id', 'longitude', 'latitude', 'data_hora_gmt', 'satelite',
             'municipio', 'estado', 'pais', 'municipio_id', 'estado_id', 'pais_id',
@@ -110,6 +92,7 @@ def get_result_municipios(file: json, key: str, municipio_id: int) -> json:
     return my_list
 
 def get_result_estados(file: json, key: str, estado_id: int) -> json:
+    """Returns the results from the filter by state code"""
     my_list = []
     keys = ['id', 'longitude', 'latitude', 'data_hora_gmt', 'satelite',
             'municipio', 'estado', 'pais', 'municipio_id', 'estado_id', 'pais_id',

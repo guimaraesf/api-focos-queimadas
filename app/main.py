@@ -1,12 +1,10 @@
 import os
 import uvicorn
 from typing import List, Optional
-from utils import (get_json_file, get_result_atribute, get_result_municipios,
-                   get_result_estados, get_all_results, get_result_atribute_municipios)
+from utils import (get_json_file, get_result_attributes, get_result_municipios, get_result_estados, get_all_results, get_result_attribute_municipios)
 from fastapi import (FastAPI, HTTPException, status, Query)
 from fastapi_healthcheck import HealthCheckFactory, healthCheckRoute
-from models import (HealthCheckSchema, PropertiesSchema, MunicipiosSchema,
-                    BiomasSchema, SatelitesSchema, Responses)
+from models import (HealthCheckSchema, PropertiesSchema, MunicipiosSchema, BiomasSchema, SatelitesSchema, Responses)
 
 
 # Inputs ------------------------------------------------------------------- #
@@ -25,11 +23,12 @@ app = FastAPI(
     description='API REST de dados abertos do INPE Programa Queimadas'
 )
 
+# Health Check Endpoint
 app.add_api_route('/api/health',
                   endpoint=healthCheckRoute(factory=_healthChecks),
                   response_model=HealthCheckSchema,
                   status_code=status.HTTP_201_CREATED,
-                  summary='Verifica o conteúdo de requisões e respostas para checar se está funcionando corretamente.',
+                  summary='Verifica a integridade das requisições',
                   tags=['Health Check'])
 
 @app.get('/focos',
@@ -78,7 +77,7 @@ async def get_focos_queimadas(municipio_id: Optional[int] = Query(default=None),
          tags=['Atributos'])
 async def get_atributos_municipios():
     result = get_json_file(path, 'utf-8', 'features')
-    result = get_result_atribute_municipios(result, 'properties')
+    result = get_result_attribute_municipios(result, 'properties')
 
     return result
 
@@ -90,7 +89,7 @@ async def get_atributos_municipios():
          tags=['Atributos'])
 async def get_atributos_biomas():
     result = get_json_file(path, 'utf-8', 'features')
-    result = get_result_atribute(result, 'properties', 'bioma')
+    result = get_result_attributes(result, 'properties', 'bioma')
 
     return result
 
@@ -103,7 +102,7 @@ async def get_atributos_biomas():
          tags=['Atributos'])
 async def get_atributos_satelites():
     result = get_json_file(path, 'utf-8', 'features')
-    result = get_result_atribute(result, 'properties', 'satelite')
+    result = get_result_attributes(result, 'properties', 'satelite')
 
     return result
 
