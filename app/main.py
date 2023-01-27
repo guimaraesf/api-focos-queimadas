@@ -1,10 +1,10 @@
 import os
 import uvicorn
 from typing import List, Optional
-from utils import (get_json_file, get_result_attributes, get_result_municipios, get_result_estados, get_all_results, get_result_attribute_municipios)
+from utils import (get_json_file, get_result_attributes, get_result_municipios, get_result_estados, get_all_results, get_result_attribute_municipios, get_result_attribute_estados,get_result_estados_municipios)
 from fastapi import (FastAPI, HTTPException, status, Query)
 from fastapi_healthcheck import HealthCheckFactory, healthCheckRoute
-from models import (HealthCheckSchema, PropertiesSchema, MunicipiosSchema, BiomasSchema, SatelitesSchema, Responses)
+from models import (HealthCheckSchema, PropertiesSchema, MunicipiosSchema, EstadosSchema, BiomasSchema, SatelitesSchema, Responses)
 
 
 # Inputs ------------------------------------------------------------------- #
@@ -43,6 +43,7 @@ app.add_api_route('/api/health',
          })
 async def get_focos_queimadas(municipio_id: Optional[int] = Query(default=None), estado_id: Optional[int] = Query(default=None)):
     result = get_json_file(path, 'utf-8', 'features')
+
     if municipio_id is None and estado_id is None:
         try:
             result = get_all_results(result, 'properties')
@@ -52,19 +53,35 @@ async def get_focos_queimadas(municipio_id: Optional[int] = Query(default=None),
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Not Found')
 
     elif municipio_id is not None and estado_id is None:
-        if len(str(municipio_id)) == 7:
-            result = get_result_municipios(result, 'properties', municipio_id)
-            return result
+        try:
+            if len(str(municipio_id)) == 7:
+                result = get_result_municipios(result, 'properties', municipio_id)
+                return result
 
-        else:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                detail=f'Code {municipio_id} invalid.')
+            else:
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                    detail=f'Code {municipio_id} invalid.')
+        except:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Not Found')
 
     elif municipio_id is None and estado_id is not None:
-        if len(str(estado_id)) == 2:
-            result = get_result_estados(result, 'properties', estado_id)
-            return result
+        try:
+            if len(str(estado_id)) == 2:
+                result = get_result_estados(result, 'properties', estado_id)
+                return result
+            else:
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                    detail=f'Code {municipio_id} invalid.')
+        except:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Not Found')
 
+    elif municipio_id is not None and estado_id is not None:
+        if len(str(municipio_id)) == 7 and len(str(estado_id)) == 2:
+            result = get_result_estados_municipios(result, 'properties', estado_id, municipio_id)
+            return result
+        else:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail=f'Code {estado_id} or {municipio_id} invalid.')
     else:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail=f'Code {estado_id} or {municipio_id} invalid.')
@@ -80,6 +97,19 @@ async def get_atributos_municipios():
     result = get_result_attribute_municipios(result, 'properties')
 
     return result
+
+@app.get('/focos/atributos/estados',
+         description=f'',
+         response_model=List[EstadosSchema],
+         status_code=status.HTTP_200_OK,
+         summary='Retorna uma lista com observações únicas de todos os municípios.',
+         tags=['Atributos'])
+async def get_atributos_municipios():
+    result = get_json_file(path, 'utf-8', 'features')
+    result = get_result_attribute_estados(result, 'properties')
+
+    return result
+
 
 @app.get('/focos/atributos/biomas',
          description=f'',

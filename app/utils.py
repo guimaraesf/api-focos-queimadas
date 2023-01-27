@@ -41,7 +41,6 @@ def get_result_attribute_municipios(file: json, key: str) -> json:
     return my_list
 
 
-# Corrigir, pois os estados estão se repetindo.
 def get_result_attribute_estados(file: json, key: str) -> json:
     """Returns the unique observations of cities"""
     my_list = []
@@ -49,7 +48,7 @@ def get_result_attribute_estados(file: json, key: str) -> json:
     for i in range(len(file)):
         items = file[i][key].items()
         my_dict = {k: v for k, v in items
-                   or k.endswith('pais_id')
+                   if k.endswith('pais_id')
                    or k.endswith('pais')
                    or k.endswith('estado_id')
                    or k.startswith('estado')}
@@ -104,5 +103,24 @@ def get_result_estados(file: json, key: str, estado_id: int) -> json:
         for k, v in my_dict.items():
             if 'estado_id' in k and estado_id == v:
                 my_list.append(my_dict)
+
+    return my_list
+
+
+def get_result_estados_municipios(file: json, key: str, estado_id: int, municipio_id: int) -> json:
+    """Returns the results from the filter by state code"""
+    my_list = []
+    keys = ['id', 'longitude', 'latitude', 'data_hora_gmt', 'satelite',
+            'municipio', 'estado', 'pais', 'municipio_id', 'estado_id', 'pais_id',
+            'numero_dias_sem_chuva', 'precipitacao', 'risco_fogo', 'bioma']
+
+    for i in range(len(file)):
+        items = file[i][key].items()
+        my_dict = {k: v for k, v in items if k in keys}
+        for k, v in my_dict.items():
+            if 'estado_id' in k and estado_id == v:
+                for k, v in my_dict.items():
+                    if 'municipio_id' in k and municipio_id == v:
+                        my_list.append(my_dict)
 
     return my_list
