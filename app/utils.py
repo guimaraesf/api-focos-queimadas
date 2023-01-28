@@ -14,10 +14,10 @@ def get_json_file(file, encoding: str, key: str) -> json:
 
 def get_all_results(file: json, key: str) -> json:
     """Returns all available results"""
-    lista = []
+    my_list = []
     for i in range(len(file)):
-        lista.append(file[i][key])
-    return lista
+        my_list.append(file[i][key])
+    return my_list
 
 
 def get_result_attribute_counties(file: json, key: str) -> json:
