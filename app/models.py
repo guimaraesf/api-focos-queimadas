@@ -30,16 +30,16 @@ class PropertiesSchema(BaseModel):
 class MunicipiosSchema(BaseModel):
     pais_id: int
     pais: str
-    estado_id: int
+    estado_id: int = Field(default=..., description='Código de estado do IBGE')
     estado: str
-    municipio_id: int
+    municipio_id: int = Field(default=..., description='Código de município do IBGE')
     municipio: str
 
 
 class EstadosSchema(BaseModel):
     pais_id: int
     pais: str
-    estado_id: int
+    estado_id: int = Field(default=..., description='Código de estado do IBGE')
     estado: str
 
 

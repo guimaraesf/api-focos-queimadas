@@ -53,16 +53,12 @@ async def get_focos(municipio_id: Optional[int] = Query(default=None), estado_id
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Not Found')
 
     if municipio_id is not None and estado_id is None:
-        try:
-            if len(str(municipio_id)) == 7:
-                result = get_result_counties(result, 'properties', municipio_id)
-                return result
-
-            else:
-                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                    detail=f'Code {municipio_id} invalid.')
-        except:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Not Found')
+        if len(str(municipio_id)) == 7:
+            result = get_result_counties(result, 'properties', municipio_id)
+            return result
+        else:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail=f'Code {municipio_id} invalid.')
 
     if municipio_id is None and estado_id is not None:
         try:
@@ -87,6 +83,20 @@ async def get_focos(municipio_id: Optional[int] = Query(default=None), estado_id
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail=f'Codes {estado_id} or {municipio_id} invalid.')
 
+# @app.get('/focos/contagens',
+#          # response_model=List[PropertiesSchema],
+#          status_code=status.HTTP_200_OK,
+#          summary=f'Retorna a contagem dos dados de focos de calor nas últimas {file_name[6:8]} horas',
+#          tags=['Focos de Queimadas'],
+#          responses={
+#              400: {'model': Responses, 'description': 'Code invalid.'},
+#              404: {'model': Responses, 'description': 'Code not found'},
+#              422: {'model': Responses, 'description': 'Codes do not match.'}
+#          })
+# async def get_focos_count(municipio_id: Optional[int] = Query(default=None), estado_id: Optional[int] = Query(default=None)):
+#     result = get_json_file(path, 'utf-8', 'features')
+#     result = get_result_counties_count(result, 'properties', municipio_id)
+#     return result
 
 @app.get('/focos/atributos/municipios',
          response_model=List[MunicipiosSchema],
@@ -143,7 +153,6 @@ async def get_attribute_satellites():
 
     except:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Not Found')
-
 
 if __name__ == '__main__':
     uvicorn.run('main:app', host='127.0.0.1', port=8001, log_level='info', reload=True)

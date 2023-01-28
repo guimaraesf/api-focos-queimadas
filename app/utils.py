@@ -124,3 +124,28 @@ def get_result_states_counties(file: json, key: str, estado_id: int, municipio_i
                         my_list.append(my_dict)
 
     return my_list
+
+# def get_result_counties_count(file: json, key: str, municipio_id: int) -> json:
+#     """Returns the unique observations of cities"""
+#     my_list = []
+#     count = 0
+#     key_order = ['estado_id', 'estado', 'municipio_id', 'municipio']
+#     for i in range(len(file)):
+#         items = file[i][key].items()
+#         values = file[i][key].values()
+#         my_dict = {k: v for k, v in items
+#                    if k.endswith('municipio_id')
+#                    or k.endswith('municipio')
+#                    or k.endswith('estado_id')
+#                    or k.startswith('estado')}
+#         my_dict = OrderedDict(my_dict)
+#         for k in key_order:
+#             my_dict.move_to_end(k)
+#         my_list = [my_list[i] for i in range(len(my_list)) if i == my_list.index(my_list[i])]
+#         for v in values:
+#             count += 1
+#             my_dict['contagem'] = count
+#         my_list.append(my_dict)
+#     del my_list[-1]
+#
+#     return my_list
