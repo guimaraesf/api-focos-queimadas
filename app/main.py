@@ -31,6 +31,7 @@ app.add_api_route('/api/health',
                   summary='Verifica a integridade das requisições',
                   tags=['Health Check'])
 
+
 @app.get('/focos',
          response_model=List[PropertiesSchema],
          status_code=status.HTTP_200_OK,
@@ -83,20 +84,6 @@ async def get_focos(municipio_id: Optional[int] = Query(default=None), estado_id
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                                 detail=f'Codes {estado_id} or {municipio_id} invalid.')
 
-# @app.get('/focos/contagens',
-#          # response_model=List[PropertiesSchema],
-#          status_code=status.HTTP_200_OK,
-#          summary=f'Retorna a contagem dos dados de focos de calor nas últimas {file_name[6:8]} horas',
-#          tags=['Focos de Queimadas'],
-#          responses={
-#              400: {'model': Responses, 'description': 'Code invalid.'},
-#              404: {'model': Responses, 'description': 'Code not found'},
-#              422: {'model': Responses, 'description': 'Codes do not match.'}
-#          })
-# async def get_focos_count(municipio_id: Optional[int] = Query(default=None), estado_id: Optional[int] = Query(default=None)):
-#     result = get_json_file(path, 'utf-8', 'features')
-#     result = get_result_counties_count(result, 'properties', municipio_id)
-#     return result
 
 @app.get('/focos/atributos/municipios',
          response_model=List[MunicipiosSchema],
@@ -108,8 +95,10 @@ async def get_attribute_counties():
         result = get_json_file(path, 'utf-8', 'features')
         result = get_result_attribute_counties(result, 'properties')
         return result
+
     except:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Not Found')
+
 
 @app.get('/focos/atributos/estados',
          response_model=List[EstadosSchema],
@@ -124,6 +113,7 @@ async def get_attribute_states():
 
     except:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Not Found')
+
 
 @app.get('/focos/atributos/biomas',
          response_model=List[BiomasSchema],
@@ -153,6 +143,7 @@ async def get_attribute_satellites():
 
     except:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Not Found')
+
 
 if __name__ == '__main__':
     uvicorn.run('main:app', host='127.0.0.1', port=8001, log_level='info', reload=True)
