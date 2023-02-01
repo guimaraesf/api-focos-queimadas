@@ -8,9 +8,10 @@ from models import (HealthCheckSchema, PropertiesSchema, MunicipiosSchema, Estad
 
 
 # Inputs ------------------------------------------------------------------- #
+# Here are passed the information for the download of the file to be carried out
 
 local = os.getenv('FILES')  # Directory where the files will be downloaded.
-file_name = 'focos_48h_brasil.json'  # File name in portal.
+file_name = 'focos_48h_brasil.json'  # File name downloaded in portal.
 path = local + '/' + file_name
 
 # Configuration API ------------------------------------------------------------------- #
